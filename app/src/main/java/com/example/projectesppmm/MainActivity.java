@@ -8,18 +8,33 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+    ArrayList<Missatge> missatges = new ArrayList<>();
     private ReceptorXarxa receptor;
+    ListView list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        list = findViewById(R.id.listView);
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         receptor = new ReceptorXarxa();this.registerReceiver(receptor, filter);
         anarLoginActivity();
+        new RequestAsync().execute();
     }
 
     private void anarLoginActivity() {
@@ -60,5 +75,44 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             comprovaConnectivitat();
         }
+    }
+
+    public class RequestAsync extends AsyncTask<String,String,String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                //GET Request
+                return RequestHandler.sendGet("http://52.44.95.114/quepassaeh/server/public/provamissatge/");
+            }
+            catch(Exception e){
+                return new String("Exception: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null){
+                try {
+                    JSONObject convertedObject = new JSONObject(s);
+                    JSONArray jsonArray = convertedObject.getJSONArray("dades");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject explrObject = jsonArray.getJSONObject(i);
+                        System.out.println(explrObject);
+                        Missatge missatge = new Gson().fromJson(explrObject.toString(), Missatge.class);
+                        missatges.add(missatge);
+                        System.out.println(missatge);
+                    }
+                    mostraMissatges();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public void mostraMissatges() {
+        ArrayMissatge adapter = new ArrayMissatge(this, R.layout.missatge, missatges);
+        list.setAdapter(adapter);
     }
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:id="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:text="Nom de l'usuari"
+                android:textStyle="bold"
+                android:id="@+id/nomUsuari"
+                android:gravity="left"/>
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="Data del missatge"
+                android:paddingRight="5dp"
+                android:id="@+id/dataMissatge"
+                android:gravity="right"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="10dp"
+            android:text="missatge d'exemple"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            android:id="@+id/missatge"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

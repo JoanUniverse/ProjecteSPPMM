@@ -5,10 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -20,6 +26,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -71,8 +81,23 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             if(s!=null){
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
-                finish();
+                String nom;
+                Boolean resultat;
+                try {
+                    JSONObject convertedObject = new JSONObject(s);
+//                    System.out.println(s);
+                    resultat = convertedObject.getBoolean("correcta");
+                    //Si el login es correcta acaba l'activitat, si no fa un toast dient que les dades son incorrectes
+                    if(resultat) {
+                        nom = convertedObject.getJSONObject("dades").getString("nom");
+                        Toast.makeText(getApplicationContext(), "Hola " + nom, Toast.LENGTH_LONG).show();
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Dades incorrectes", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
