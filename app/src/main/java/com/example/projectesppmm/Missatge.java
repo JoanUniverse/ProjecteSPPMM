@@ -5,13 +5,13 @@ import java.util.Date;
 public class Missatge {
     private int codimissatge;
     private String msg;
-    //private Date datahora;
+    private String datahora;
     private String nom;
 
-    public Missatge(int codimissatge, String msg, String nom) {
+    public Missatge(int codimissatge, String msg, String datahora, String nom) {
         this.codimissatge = codimissatge;
         this.msg = msg;
-//        this.datahora = datahora;
+        this.datahora = datahora;
         this.nom = nom;
     }
 
@@ -31,13 +31,13 @@ public class Missatge {
         this.msg = msg;
     }
 
-//    public Date getDatahora() {
-//        return datahora;
-//    }
-//
-//    public void setDatahora(Date datahora) {
-//        this.datahora = datahora;
-//    }
+    public String getDatahora() {
+        return datahora;
+    }
+
+    public void setDatahora(String datahora) {
+        this.datahora = datahora;
+    }
 
     public String getNom() {
         return nom;
@@ -52,7 +52,7 @@ public class Missatge {
         return "Missatge{" +
                 "codimissatge=" + codimissatge +
                 ", msg='" + msg + '\'' +
-//                ", datahora=" + datahora +
+                ", datahora=" + datahora +
                 ", codiusuari='" + nom + '\'' +
                 '}';
     }

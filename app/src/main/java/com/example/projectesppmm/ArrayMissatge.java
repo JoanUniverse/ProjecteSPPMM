@@ -2,6 +2,7 @@ package com.example.projectesppmm;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +10,15 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ArrayMissatge extends ArrayAdapter<Missatge> {
     private Context context;
@@ -23,6 +30,7 @@ public class ArrayMissatge extends ArrayAdapter<Missatge> {
         this.missatges = missatges;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public View getView(final int position, final View convertView, ViewGroup parent) {
         //agafam el Item per posició a l'Array
         final Missatge missatge = missatges.get(position);
@@ -37,7 +45,25 @@ public class ArrayMissatge extends ArrayAdapter<Missatge> {
         TextView textMissatge = view.findViewById(R.id.missatge);
         //omplim les dades
         nomUsuari.setText(missatge.getNom());
-        //dataMissatge.setText("" + missatge.getDatahora());
+        SimpleDateFormat formatter6=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long horaMissatge = 0;
+        long dies = 0;
+        long hores = 0;
+        try {
+            Date hora = formatter6.parse(missatge.getDatahora());
+            Date now = new Date();
+            horaMissatge = now.getTime() - hora.getTime();
+            dies = TimeUnit.DAYS.convert(horaMissatge, TimeUnit.MILLISECONDS);
+            hores = TimeUnit.HOURS.convert(horaMissatge, TimeUnit.MILLISECONDS);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(dies >= 1) {
+            dataMissatge.setText("Fa " + dies + " dies");
+        } else {
+            dataMissatge.setText("Fa " + hores + " hores");
+        }
+
         textMissatge.setText(missatge.getMsg());
 
         return view;
