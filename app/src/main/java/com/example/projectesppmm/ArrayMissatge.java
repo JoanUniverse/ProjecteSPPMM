@@ -45,25 +45,21 @@ public class ArrayMissatge extends ArrayAdapter<Missatge> {
         TextView textMissatge = view.findViewById(R.id.missatge);
         //omplim les dades
         nomUsuari.setText(missatge.getNom());
-        SimpleDateFormat formatter6=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        long horaMissatge = 0;
-        long dies = 0;
-        long hores = 0;
-        try {
-            Date hora = formatter6.parse(missatge.getDatahora());
-            Date now = new Date();
-            horaMissatge = now.getTime() - hora.getTime();
-            dies = TimeUnit.DAYS.convert(horaMissatge, TimeUnit.MILLISECONDS);
-            hores = TimeUnit.HOURS.convert(horaMissatge, TimeUnit.MILLISECONDS);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if(dies >= 1) {
-            dataMissatge.setText("Fa " + dies + " dies");
-        } else {
-            dataMissatge.setText("Fa " + hores + " hores");
-        }
-
+//        SimpleDateFormat formatter6=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        long horaMissatge = 0;
+//        long dies = 0;
+//        long hores = 0;
+//        try {
+//            Date hora = formatter6.parse(missatge.getDatahora());
+//            Date now = new Date();
+//            horaMissatge = now.getTime() - hora.getTime();
+//            dies = TimeUnit.DAYS.convert(horaMissatge, TimeUnit.MILLISECONDS);
+//            hores = TimeUnit.HOURS.convert(horaMissatge, TimeUnit.MILLISECONDS);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        if(dies >= 1) {
+        dataMissatge.setText(missatge.getDatahora());
         textMissatge.setText(missatge.getMsg());
 
         return view;

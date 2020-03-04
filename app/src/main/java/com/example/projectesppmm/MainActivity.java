@@ -6,20 +6,26 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -114,5 +120,35 @@ public class MainActivity extends AppCompatActivity {
     public void mostraMissatges() {
         ArrayMissatge adapter = new ArrayMissatge(this, R.layout.missatge, missatges);
         list.setAdapter(adapter);
+        list.setSelection(adapter.getCount() - 1);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.logout:
+                borraPreferencies();
+                Toast.makeText(getApplicationContext(), "Adeu", Toast.LENGTH_LONG).show();
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void borraPreferencies(){
+        SharedPreferences spref = getSharedPreferences("DadesGuardades", MODE_PRIVATE);
+        SharedPreferences.Editor editor = spref.edit();
+        editor.putString("email", null);
+        editor.putString("password", null);
+        editor.apply();
     }
 }

@@ -3,6 +3,7 @@ package com.example.projectesppmm;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,9 +24,11 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        comprovaLogin();
     }
 
     public void onLoginButtonClicked(View v) {
@@ -89,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                     resultat = convertedObject.getBoolean("correcta");
                     //Si el login es correcta acaba l'activitat, si no fa un toast dient que les dades son incorrectes
                     if(resultat) {
+                        guardarDades();
                         nom = convertedObject.getJSONObject("dades").getString("nom");
                         Toast.makeText(getApplicationContext(), "Hola " + nom, Toast.LENGTH_LONG).show();
                         finish();
@@ -99,6 +105,38 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+    private void guardarDades(){
+        //Cream la instància del Shared preferences amb un nom i de tipus privat per a que només hi pugui accedir la nostra app.
+        SharedPreferences spref = getSharedPreferences("DadesGuardades", MODE_PRIVATE);
+        //També crearem el nostre editor per a poder "escriure" a les nostres shared preferences i guardar nova informació
+        SharedPreferences.Editor editor = spref.edit();
+        Gson gson = new Gson();
+        //Després de crear el gson, amb una String json hi guardam la nostra array d'objectes que serà la que anirà a les SharedPreferences
+        String usuariJson = gson.toJson(usuari);
+        String contrasenyaJson = gson.toJson(contrasenya);
+        //Ficam l'String a les SharedPreferences amb un referència a través de l'editor.
+        editor.putString("email", usuariJson);
+        editor.putString("password", contrasenyaJson);
+        //Finalment confirmam els canvis realitzats.
+        editor.apply();
+    }
+
+    private void comprovaLogin(){
+        SharedPreferences spref = getSharedPreferences("DadesGuardades", MODE_PRIVATE);
+        Gson gson = new Gson();
+        Type type = new TypeToken<String>(){}.getType();
+        String jsonE = spref.getString("email", null);
+        jsonE = gson.fromJson(jsonE, type);
+        System.out.println(jsonE);
+        String jsonP = spref.getString("password", null);
+        jsonP = gson.fromJson(jsonP, type);
+
+        if (jsonE != null){
+            usuari = jsonE;
+            contrasenya = jsonP;
+            new RequestAsync().execute();
         }
     }
 }
