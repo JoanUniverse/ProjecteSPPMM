@@ -11,10 +11,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,17 +33,33 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<Missatge> missatges = new ArrayList<>();
-    private ReceptorXarxa receptor;
-    ListView list;
+    private ListView list;
+    private String idUsuari;
+    private String msg;
+    EditText missatgeEditText;
+    //final Handler handler = new Handler();
+    //private Runnable getResponceAfterInterval;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list = findViewById(R.id.listView);
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receptor = new ReceptorXarxa();this.registerReceiver(receptor, filter);
-        anarLoginActivity();
         new RequestAsync().execute();
+        //anarLoginActivity();
+        Bundle data = getIntent().getExtras();
+        idUsuari = data.getString("key");
+        missatgeEditText = findViewById(R.id.enviaMissatgeEditText);
+//        getResponceAfterInterval = new Runnable() {
+//            public void run() {
+//                try {
+//                    new RequestAsync().execute();
+//                } catch (Exception e) {
+//                }
+//                handler.postDelayed(this, 1000 * 10);
+//            }
+//        };
+//        handler.post(getResponceAfterInterval);
     }
 
     private void anarLoginActivity() {
@@ -49,39 +68,18 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.startActivity(myIntent);
     }
 
-    public void comprovaConnectivitat(){
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            Toast.makeText(this,"Xarxa ok", Toast.LENGTH_LONG).show();
+    public void onEviarButtonClick(View v)
+    {
+        msg = missatgeEditText.getText().toString();
+        msg = msg.trim();
+        if(msg.isEmpty() || msg == null) {
+            Toast.makeText(this,"Missatge buit", Toast.LENGTH_LONG).show();
+            missatgeEditText.setText("");
         } else {
-            Toast.makeText(this,"Xarxa no disponible", Toast.LENGTH_LONG).show();
-        }
-        networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        boolean connectat4G = networkInfo.isConnected();
-        networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        boolean connectatWifi = networkInfo.isConnected();
-        if (connectat4G) {
-            Toast.makeText(this,"Connectat per 4G", Toast.LENGTH_LONG).show();
-        }if(connectatWifi){
-            Toast.makeText(this,"Connectat per Wi-Fi", Toast.LENGTH_LONG).show();
+            new RequestAsyncEnvia().execute();
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (receptor != null) {
-            this.unregisterReceiver(receptor);
-        }
-    }
-
-    public class ReceptorXarxa extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            comprovaConnectivitat();
-        }
-    }
 
     public class RequestAsync extends AsyncTask<String,String,String> {
         @Override
@@ -117,6 +115,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public class RequestAsyncEnvia extends AsyncTask<String,String,String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                // POST Request
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("msg", msg);
+                postDataParams.put("codiusuari", idUsuari);
+
+                return RequestHandler.sendPost("http://52.44.95.114/quepassaeh/server/public/provamissatge/",postDataParams);
+            }
+            catch(Exception e){
+                return new String("Exception: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null){
+                missatgeEditText.setText("");
+                new RequestAsync().execute();
+            }
+        }
+    }
+
     public void mostraMissatges() {
         ArrayMissatge adapter = new ArrayMissatge(this, R.layout.missatge, missatges);
         list.setAdapter(adapter);
@@ -137,7 +160,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.logout:
                 borraPreferencies();
                 Toast.makeText(getApplicationContext(), "Adeu", Toast.LENGTH_LONG).show();
+                anarLoginActivity();
                 finish();
+                return true;
+            case R.id.refresca:
+                new RequestAsync().execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

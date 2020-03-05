@@ -55,6 +55,7 @@ public class RequestHandler {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
+        //con.setRequestProperty("Authorization", token);
         int responseCode = con.getResponseCode();
         System.out.println("Response Code :: " + responseCode);
         if (responseCode == HttpURLConnection.HTTP_OK) {
