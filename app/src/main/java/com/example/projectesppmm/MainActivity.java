@@ -97,10 +97,15 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             if(s!=null){
                 try {
+                    dbQuePasaAux db;
+                    db = new dbQuePasaAux(getApplicationContext());
+                    //db.borraMissatges();
                     JSONObject convertedObject = new JSONObject(s);
                     JSONArray jsonArray = convertedObject.getJSONArray("dades");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject explrObject = jsonArray.getJSONObject(i);
+                        db.isEmpty();
+                        db.guardarRecibido(explrObject);
                         System.out.println(explrObject);
                         Missatge missatge = new Gson().fromJson(explrObject.toString(), Missatge.class);
                         missatges.add(missatge);

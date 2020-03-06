@@ -24,7 +24,6 @@
         <EditText android:id="@+id/usuariEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="joanquetglas@paucasesnovescifp.cat"
             android:hint="Usuari" />
 
         <TextView
@@ -34,7 +33,6 @@
         <EditText android:id="@+id/contrasenyaEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="s2p"
             android:hint="Contrasenya" />
 
         <Button

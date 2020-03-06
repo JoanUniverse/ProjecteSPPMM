@@ -6,13 +6,19 @@ public class Missatge {
     private int codimissatge;
     private String msg;
     private String datahora;
+    private String codiusuari;
     private String nom;
 
-    public Missatge(int codimissatge, String msg, String datahora, String nom) {
+    public Missatge(int codimissatge, String msg, String datahora, String codiusuari, String nom) {
         this.codimissatge = codimissatge;
         this.msg = msg;
         this.datahora = datahora;
+        this.codiusuari = codiusuari;
         this.nom = nom;
+    }
+
+    public Missatge() {
+
     }
 
     public int getCodimissatge() {
@@ -39,6 +45,14 @@ public class Missatge {
         this.datahora = datahora;
     }
 
+    public String getCodiusuari() {
+        return codiusuari;
+    }
+
+    public void setCodiusuari(String codiusuari) {
+        this.codiusuari = codiusuari;
+    }
+
     public String getNom() {
         return nom;
     }
@@ -52,8 +66,9 @@ public class Missatge {
         return "Missatge{" +
                 "codimissatge=" + codimissatge +
                 ", msg='" + msg + '\'' +
-                ", datahora=" + datahora +
-                ", codiusuari='" + nom + '\'' +
+                ", datahora='" + datahora + '\'' +
+                ", codiusuari='" + codiusuari + '\'' +
+                ", nom='" + nom + '\'' +
                 '}';
     }
 }
